@@ -1,52 +1,22 @@
-//handle setupevents as quickly as possible
-const setupEvents = require('./installers/setupEvents')
-if (setupEvents.handleSquirrelEvent()) {
-  // squirrel event handled and app will exit in 1000ms, so don't do anything else
-  return;
-}
-
 const electron = require('electron')
 // Module to control application life.
 const app = electron.app
-const {ipcMain} = require('electron')
-var path = require('path')
-require('./dialog/dialog')
-
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
-//Adds the main Menu to our app
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
-let secondWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({titleBarStyle: 'hidden',
-    width: 1281,
-    height: 800,
-    minWidth: 1281,
-    minHeight: 800,
-    backgroundColor: '#312450',
-    show: false,
-    icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
-    webPreferences: {
-      nodeIntegration: true
-    }
-  })
+  mainWindow = new BrowserWindow({width: 1281, height: 800, minWidth: 1281, minHeight: 800})
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html`)
 
   // Open the DevTools.
   //mainWindow.webContents.openDevTools()
-
-
-  // Show the mainwindow when it is loaded and ready to show
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show()
-  })
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -55,33 +25,7 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   })
-
-  secondWindow = new BrowserWindow({frame: false,
-    width: 800,
-    height: 600,
-    minWidth: 800,
-    minHeight: 600,
-    backgroundColor: '#312450',
-    show: false,
-    icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
-    parent: mainWindow,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  })
-
-  secondWindow.loadURL(`file://${__dirname}/windows/ipcwindow.html`)
-
-  require('./menu/mainmenu')
 }
-
-ipcMain.on('open-second-window', (event, arg)=> {
-    secondWindow.show()
-})
-
-ipcMain.on('close-second-window', (event, arg)=> {
-    secondWindow.hide()
-})
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
